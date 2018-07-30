@@ -1,0 +1,333 @@
+[config-begin]
+	Outputdir  = set_new_output_directory
+	Outputfile = outputfile.root
+	Lumi = 3000
+	Maxchilds = 6
+	Samplesdir = output/
+[config-end]
+
+[inputfiles-begin]
+ttbar_(inclusive)0_ntuple.root, ttbar (inclusive), 900, 23, 39999,1, true 
+ttbar_(inclusive)0_ntuple.root, ttbar (inclusive), 900, 23, 39999,1, true 
+[inputfiles-end]
+ttbar_(inclusive)0_ntuple.root, ttbar (inclusive), 900, 23, 39999,1, true 
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 1000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+[inputfiles-end]
+[inputfiles-end]
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+[inputfiles-end]
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
+ttbar0_ntuple.root, ttbar, 600, 100, 10000,1, false 
+[inputfiles-end]
