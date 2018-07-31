@@ -6,7 +6,9 @@
  */
 
 #include "interface/testanalyser.h"
-
+#include "../interface/helpers.h"
+#include "../interface/ttbar_solver.h"
+#include "../interface/pz_calculator.h"
 
 void testanalyser::analyze(size_t childid /* this info can be used for printouts */){
 
@@ -70,22 +72,9 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 	 * Always use this function to add a new histogram (can also be 2D)!
 	 * Histograms created this way are automatically added to the output file
 	 */
-	TH1* histo=addPlot(new TH1D("histoname1","histotitle1",450,0,100),"p_{T} [GeV]","N_{e}");
 	//Playing with values
-	TH1* histoSize=addPlot(new TH1D("jetsize","number of jets",10,0,10),"n","N_{event}");
 	TH1* histoEr=addPlot(new TH1D("Errors","number of double counting",10,0,10),"n","N_{event}");
 
-
-	//One jet values
-	TH1* histobJet=addPlot(new TH1D("bjet","m_{inv} of jets",200,0,50),"M [GeV]","N_{e}");
-	TH1* histoJetPT=addPlot(new TH1D("jetPT","P_{T} of jets",450,0,2000),"Jet_Mass [GeV]","N_{jet}");
-	TH1* histoJeteta=addPlot(new TH1D("jeteta","#eta of jets",450,-6,6),"#eta","N_{jet}");
-	TH1* histoJetMass=addPlot(new TH1D("jetmass","Mass of jets",450,0,300),"M [GeV]","N_{jet}");
-	//Invariant masses
-	TH1* histo2Comb=addPlot(new TH1D("TLorentz2c","Combined m_{inv} of 2 jets",100,0,300),"M [GeV]","N_{jet}");
-	TH1* histoLor=addPlot(new TH1D("TLorentz","m_{inv} of jets",50,0,20),"M [GeV]","N_{jet}");
-	TH1* histo3Comb=addPlot(new TH1D("TLorentz3c","Combined m_{inv} of 3 jets",100,0,500),"M [GeV]","N_{jet}");
-	TH1* histoLorAll=addPlot(new TH1D("TLoretnzAll","m_{inv} of all jets",100,100,700),"M [GeV]","N_{event}");
 	//sorted invariant masses
 	TH1* histoW=addPlot(new TH1D("W boson","jets from W decay",100,10,150),"M [GeV]","N_{jets}");
 	TH1* histoW3C=addPlot(new TH1D("Wplusjet","m_{inv} of 3 jets(W sorted)",100,0,500),"M [GeV]","N_{jets}");
@@ -138,49 +127,16 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 
 		/*
 		 * Begin the event-by-event analysis
-		 */
-		TLorentzVector M_all(0.,0.,0.,0.);		
+		 */		
 
-		for(size_t i=0;i<elecs.size();i++){
-			histo->Fill(elecs.at(i)->PT);
-		}
-		/*obtaining jet prperties(Pt,eta,mass,invariant mass)*/
-		for(size_t i=0;i<jet.size();i++){
-			histoJetPT->Fill(jet.at(i)->PT);
-			histoJeteta->Fill(jet.at(i)->Eta);
-			histoJetMass->Fill(jet.at(i)->Mass);
-			
-			TLorentzVector v1;	
-			v1.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
-			histoLor->Fill(v1.M());
-			histobJet->Fill(v1.M());
-			/*obtaining 2,3 jets invariant mass*/
-			for(size_t j=i;j<jet.size();j++){
-				if(j != i){
-					TLorentzVector v2;
-					v2.SetPtEtaPhiM(jet.at(j)->PT,jet.at(j)->Eta,jet.at(j)->Phi,jet.at(j)->Mass);
-					v2=v2+v1;
-					histo2Comb->Fill(v2.M());
-					if(j!=jet.size()){
-						for(size_t k=(j+1);k<(jet.size());k++){
-							TLorentzVector v3;
-							v3.SetPtEtaPhiM(jet.at(k)->PT,jet.at(k)->Eta,jet.at(k)->Phi,jet.at(k)->Mass);
-							v3=v3+v2;
-							histo3Comb->Fill(v3.M());
-						}
-					}
-				}
-			}
-			M_all += v1;
-		}
-
-		histoLorAll->Fill(M_all.M()); //Invariant mass of all jets in one event
-		histoSize->Fill(jet.size());
 		
 		//Event analysis
 		//Limits for event:
 		//|eta|< 2.5 for jets
 		//At least 2 b-jets
+		//At least 2 light jets(4 for FH)
+
+		//Counting eligible jets
 		size_t bjets=0;
 		size_t ljets=0;
 		for(size_t i=0;i<jet.size();i++){
@@ -190,20 +146,32 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 				}else{ljets++;}
 			}
 		}
+		
 		if(bjets<2){continue;}
 		if(ljets<2){continue;}
+
 		//Semieptonic
 		//Limits for events:
 		//|Eta|<2.1 for leptons
 		//P_T>30GeV for leptons
 		//Only one lepton
+		
+		//Class for calculating neutrino Pz
+		pz_calculator neutrPZ;
+
+		//Class for finding Chi^2
+		ttbar_solver solve;
+
 		bool interesting=true;
 		TLorentzVector lepton;
-		double M_lepton=M_e;
+		double M_lepton=M_e; //setting lepton mass to elektron, changed further if that not the case
 		double lepton_eta;
 		double lepton_phi;
 		bool second=false;
+		
 		//Searching events with only one lepton
+		
+		//Searching eligible electron
 		for(size_t i=0;i<elecs.size();i++){
 			if((elecs.at(i)->PT)>30 && fabs(elecs.at(i)->Eta)<2.1){
 				if(second){
@@ -216,6 +184,7 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 				}
 			}
 		 }
+		//Searching eligible muon
 		for(size_t i=0;i<muontight.size();i++){
 			if((muontight.at(i)->PT)>30 && fabs(muontight.at(i)->Eta)<2.1){
                         	if(second){
@@ -230,65 +199,43 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 			}
 		}
 
-		if(interesting){
-			//visable system
-			TLorentzVector visSys=lepton;
-			for(size_t i=0;i<jet.size();i++){
-				TLorentzVector v1;
-				v1.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
-				visSys += v1;
-			 }			
-
+		if(interesting){			
 			//missing transversal energy
 			TLorentzVector metP4=(met.at(0)->P4());
 			
-			//p_z calculating			
-			double emu = lepton.E();
-  			double pxmu = lepton.Px();
-  			double pymu = lepton.Py();
-  			double pzmu = lepton.Pz();
-  			double pxnu = metP4.Px();
-  			double pynu = metP4.Py();
-			double pznu = 0.;
+			//p_z calculating
+			neutrPZ.setLepton(lepton);
+			neutrPZ.setMET(metP4);
+			neutrPZ.setLeptonMass(M_lepton);			
 
-			double a = M_W*M_W - M_lepton*M_lepton + 2.0*(pxmu*pxnu + pymu*pynu);
-  			double A = 4.0*(emu*emu - pzmu*pzmu);
-  			double B = -4.0*a*pzmu;
-			double C = 4.0*emu*emu*(pxnu*pxnu + pynu*pynu) - a*a;
-			
-			double tmproot = B*B - 4.0*A*C;
+			//neutrino (candidate) Lorentz vector
+			TLorentzVector neutrino(metP4.Px(),metP4.Py(),neutrPZ.getPz(),TMath::Sqrt(TMath::Power(metP4.Pt(),2)+TMath::Power(neutrPZ.getPz(),2)));
 
-			if (tmproot<0) {
-    				pznu = - B/(2*A); // take real part of complex roots
-			}
-			else {
-    				double tmpsol1 = (-B + TMath::Sqrt(tmproot))/(2.0*A);
-				double tmpsol2 = (-B - TMath::Sqrt(tmproot))/(2.0*A);
-
-				if (fabs(tmpsol2-pzmu) < fabs(tmpsol1-pzmu)) { pznu = tmpsol2;}
-				else pznu = tmpsol1;
-			}
-			//neutrino candidate
-			TLorentzVector neutrino(pxnu,pynu,pznu,TMath::Sqrt(TMath::Power(metP4.Pt(),2)+TMath::Power(pznu,2)));
 			//fitting leptonic decay(boosted)
-			bool check = true;
+			bool check = true; //testing is there multiple bjets in range(for myself)
+
 			for(size_t i=0;i<jet.size();i++){
 				if(jet.at(i)->BTag && (jet.at(i)->Eta)<2.5){
-					double DEta=jet.at(i)->Eta - lepton_eta;
-					double DPhi=jet.at(i)->Phi - lepton_phi;
+					TLorentzVector v1 = makeTLorentzVector(jet.at(i));
+					//double DeltaR = deltaR(v1,lepton);
+					double DEta=jet.at(i)->Eta - lepton.PseudoRapidity();
+					double DPhi=jet.at(i)->Phi - lepton.Phi();
 					double DeltaR=TMath::Sqrt(TMath::Power(DEta,2)+TMath::Power(DPhi,2));
-					if(DeltaR<1.2){ // mass_t from leptonic decay
-						TLorentzVector v1;
-						v1.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
-						v1=v1+lepton+neutrino;
-						double JetR=TMath::Sqrt(TMath::Power(jet.at(i)->DeltaEta,2)+TMath::Power(jet.at(i)->DeltaPhi,2));
-						if(DeltaR<JetR){v1=v1-lepton;}
-						histoFromLep->Fill(v1.M());
 
+					if(DeltaR<1.2){ // mass_t from leptonic decay
+						v1=v1+lepton+neutrino;	
+						//if lepton in jet, then substracking its vector
+						double JetR=JetDeltaR(jet.at(i));
+						if(DeltaR<JetR){v1=v1-lepton;}
+						
+						//histogram from blv decay
+						histoFromLep->Fill(v1.M());
+						
+						//checking how much I double read lepton decay with this algorythm
 						if(!check){histoEr->Fill(1);}
 						check = false;
+
 					}else{//mass_t from hadronic decay
-						if(ljets>1){
 							for(size_t j=0;j<jet.size();j++){
 								if(!(jet.at(j)->BTag) && (jet.at(j)->Eta)<2.5){
 									DEta=jet.at(i)->Eta - jet.at(j)->Eta;
@@ -333,43 +280,48 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 									}
 								}
 							}
-						}
 					}
 				}
 			}
 			//Minimum of chi method:
-			double sigmabjet=100.0;
-			double sigmaljet=100.0;
-			double sigmalepton=1.0;
-			double sigmaneutrino=10.0;
 
 			double bestchi=1000.0;
-			double topmass1,topmass2,chi2;
-			TLorentzVector w1;
-			w1=neutrino+lepton;
+			double topmass1,topmass2;
+			solve.setLepton(lepton);
+			solve.setNeutrino(neutrino);
+
 			for(size_t i=0;i<jet.size();i++){
+				//bjet from blv
                                 if(jet.at(i)->BTag && (jet.at(i)->Eta)<2.5){
-					TLorentzVector top1,top2,bjet1,bjet2,ljet1,ljet2,w2;
-					bjet1.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
-					top1=bjet1+neutrino+lepton;
+					TLorentzVector bjet1,bjet2,ljet1,ljet2;
+					bjet1=makeTLorentzVector(jet.at(i));
+					solve.setBJetA(bjet1);
+
 					for(size_t j=0;j<jet.size();j++){
+						//bjet from bqq'
                                			if(jet.at(j)->BTag && (jet.at(j)->Eta)<2.5 && j!=i){
-							bjet2.SetPtEtaPhiM(jet.at(j)->PT,jet.at(j)->Eta,jet.at(j)->Phi,jet.at(j)->Mass);
+							bjet2=makeTLorentzVector(jet.at(j));
+							solve.setBJetB(bjet2);
+
 							for(size_t k=0;k<jet.size();k++){
+								//first lightjet
 								if(!(jet.at(k)->BTag) && (jet.at(k)->Eta)<2.5){
-									ljet1.SetPtEtaPhiM(jet.at(k)->PT,jet.at(k)->Eta,jet.at(k)->Phi,jet.at(k)->Mass);
+									ljet1=makeTLorentzVector(jet.at(k));
+									solve.setLightJetA(ljet1);
+				
 									for(size_t l=k;l<jet.size();l++){
+										//second lightjet
 										if(!(jet.at(l)->BTag) && (jet.at(l)->Eta)<2.5 && l!=k){
-											ljet2.SetPtEtaPhiM(jet.at(l)->PT,jet.at(l)->Eta,jet.at(l)->Phi,jet.at(l)->Mass);
-											top2=bjet2+ljet1+ljet2;
-											w2=ljet1+ljet2;
-											w2.SetPxPyPzE(0.,0.,0.,0.);
-											top2.SetPxPyPzE(0.,0.,0.,0.);
-											chi2=(M_W-w1.M())*(M_W-w1.M())/((sigmalepton+sigmaneutrino)*(sigmalepton+sigmaneutrino)) + (M_W-w2.M())*(M_W-w2.M())/((2*sigmaljet)*(2*sigmaljet)) + (M_t-top1.M())*(M_t-top1.M())/((sigmalepton+sigmaneutrino+sigmabjet)*(sigmalepton+sigmaneutrino+sigmabjet)) + (M_t-top2.M())*(M_t-top2.M())/((2*sigmaljet+sigmabjet)*(2*sigmaljet+sigmabjet));
+
+											ljet2=makeTLorentzVector(jet.at(l));
+											solve.setLightJetB(ljet2);
+											
+											//compering chi2 with previus combination
+											double chi2=solve.getChi2();
 											if(chi2<bestchi){
 												bestchi=chi2;
-												topmass1=top1.M();
-												topmass2=top2.M();
+												topmass1=(bjet1+neutrino+lepton).M();
+												topmass2=(bjet2+ljet1+ljet2).M();
 											}
 										}
 									}
@@ -379,8 +331,9 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 					}
 				}
 			}
-			histoSL->Fill(topmass1);
-			histoSL->Fill(topmass2);
+			//histogram of semileptonic decay
+			histoSL->Fill(topmass1); //from blv
+			histoSL->Fill(topmass2); //from bqq'
 		}
 
 		//Full hadronic - more sophisticated way:
