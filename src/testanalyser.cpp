@@ -72,6 +72,7 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 	 * Always use this function to add a new histogram (can also be 2D)!
 	 * Histograms created this way are automatically added to the output file
 	 */
+	TH1* histoname1=addPlot(new TH1D("histoname1","histotitle1",100,0,100)," "," ");
 	//Playing with values
 	TH1* histoEr=addPlot(new TH1D("Errors","number of double counting",10,0,10),"n","N_{event}");
 
@@ -84,10 +85,10 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 	//boosted top quark
 	TH1* histoSL_Boosted=addPlot(new TH1D("tquark_SL_boosted","t-quark m_{inv} mass in semileptonic decay",100,0,300),"M [GeV]","N");
 	TH1* histoFromLep=addPlot(new TH1D("tquark_FromLep","t-quark m_{inv} mass from blv in semileptonic decay",100,0,500),"M [GeV]","N");	
-	TH1* histoFH=addPlot(new TH1D("tquark_FH","t-quark m_{inv} mass in full hadronic decay",100,0,500),"M [GeV]","N");	
 
 	//Chi minimazing method
 	TH1* histoSL=addPlot(new TH1D("tquark_SL","t-quark m_{inv} mass in semileptonic decay",50,100,400),"M [GeV]","N");
+	TH1* histoFH=addPlot(new TH1D("tquark_FH","t-quark m_{inv} mass in full hadronic decay",100,0,500),"M [GeV]","N");
 	
 	/*
 	 * If (optionally) a skim or a flat ntuple is to be created, please use the following function to initialize
@@ -168,7 +169,6 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 		double lepton_eta;
 		double lepton_phi;
 		bool second=false;
-		
 		//Searching events with only one lepton
 		
 		//Searching eligible electron
@@ -216,62 +216,62 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 
 			for(size_t i=0;i<jet.size();i++){
 				if(jet.at(i)->BTag && (jet.at(i)->Eta)<2.5){
-					TLorentzVector v1 = makeTLorentzVector(jet.at(i));
-					//double DeltaR = deltaR(v1,lepton);
-					double DEta=jet.at(i)->Eta - lepton.PseudoRapidity();
-					double DPhi=jet.at(i)->Phi - lepton.Phi();
-					double DeltaR=TMath::Sqrt(TMath::Power(DEta,2)+TMath::Power(DPhi,2));
 
+					//Checking is angular distance is close enough between lepton and bjet
+					double DeltaR = deltaR(jet.at(i),lepton_phi,lepton_eta);
 					if(DeltaR<1.2){ // mass_t from leptonic decay
-						v1=v1+lepton+neutrino;	
+						TLorentzVector v1 = makeTLorentzVector(jet.at(i));
+						v1=v1+lepton+neutrino;	//top quark mass
+
 						//if lepton in jet, then substracking its vector
 						double JetR=JetDeltaR(jet.at(i));
 						if(DeltaR<JetR){v1=v1-lepton;}
 						
 						//histogram from blv decay
 						histoFromLep->Fill(v1.M());
+						//adding value to SL decay histogram
+						histoSL_Boosted->Fill(v1.M());
 						
-						//checking how much I double read lepton decay with this algorythm
+						//checking how much I double-read lepton decay with this algorythm
 						if(!check){histoEr->Fill(1);}
 						check = false;
-
-					}else{//mass_t from hadronic decay
+					
+					//if bjet was not from leptonic decay, then we look at hadronic
+					}else{
+							//fisrt lightjet
 							for(size_t j=0;j<jet.size();j++){
 								if(!(jet.at(j)->BTag) && (jet.at(j)->Eta)<2.5){
-									DEta=jet.at(i)->Eta - jet.at(j)->Eta;
-									DPhi=jet.at(i)->Phi - jet.at(j)->Phi;
-									DeltaR=TMath::Sqrt(TMath::Power(DEta,2)+TMath::Power(DPhi,2));
+									DeltaR=deltaR(jet.at(i),jet.at(j));
+									//Angular distance between bjet and ljet has to be close enough
 									if(DeltaR<1.2){
+										//second light jet
 										for(size_t k=j;k<jet.size();k++){
 											if(!(jet.at(k)->BTag) && (jet.at(k)->Eta)<2.5 && k!=j){
 												int leading; //leading jet
+												//declearing highest PT jet as leading jet
 												if(jet.at(i)->PT > jet.at(j)->PT){leading=i;}
 												else{leading=j;}
 												if(jet.at(leading)->PT < jet.at(k)->PT){leading=k;}
-															
-												if(leading!=k){
-													DEta=jet.at(leading)->Eta - jet.at(k)->Eta;
-													DPhi=jet.at(leading)->Phi - jet.at(k)->Phi;
-													DeltaR=TMath::Sqrt(TMath::Power(DEta,2)+TMath::Power(DPhi,2));
-												}else{
-													DEta=jet.at(i)->Eta - jet.at(k)->Eta;
-													DPhi=jet.at(i)->Phi - jet.at(k)->Phi;
-													DeltaR=TMath::Sqrt(TMath::Power(DEta,2)+TMath::Power(DPhi,2));
 
-													DEta=jet.at(j)->Eta - jet.at(k)->Eta;
-													DPhi=jet.at(j)->Phi - jet.at(k)->Phi;
-													double DeltaR_l=TMath::Sqrt(TMath::Power(DEta,2)+TMath::Power(DPhi,2));
+												//if k is not the leading, then we check that angular distance with leading is small enough
+												if(leading!=k){
+													DeltaR=deltaR(jet.at(leading),jet.at(k));
+
+												//if k is leading then we check that other jets is close enough
+												}else{
+													DeltaR=deltaR(jet.at(i),jet.at(k));
+													double DeltaR_l=deltaR(jet.at(j),jet.at(k));
+													
 													if(DeltaR<DeltaR_l){DeltaR=DeltaR_l;}//Taking into account highest value
 													
 												}
 												if(DeltaR<1.2){
-													TLorentzVector v1;
-													TLorentzVector v2;
-													TLorentzVector v3;
-													v1.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
-													v2.SetPtEtaPhiM(jet.at(j)->PT,jet.at(j)->Eta,jet.at(j)->Phi,jet.at(j)->Mass);
-													v3.SetPtEtaPhiM(jet.at(k)->PT,jet.at(k)->Eta,jet.at(k)->Phi,jet.at(k)->Mass);
-													v1=v1+v2+v3;
+													//if distances is OK, then this combination could be from t decay
+													TLorentzVector v1=makeTLorentzVector(jet.at(i));
+													TLorentzVector v2=makeTLorentzVector(jet.at(j));
+													TLorentzVector v3=makeTLorentzVector(jet.at(k));
+													v1=v1+v2+v3; //t-quark 4vector
+													//adding value to semileptonic decay histogram
 													histoSL_Boosted->Fill(v1.M());
 												}
 											}
@@ -340,46 +340,52 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 		
 		//Sorting out interesting full hadronic events:
 		if(ljets>3){	//minimum for reconstruction ttbar
-			//Minimum of chi method:
-			double sigmabjet=10.0;
-                        double sigmaljet=10.0;
+			//Minimum of chi method
 
                         double bestchi=1000.0;
-                        double topmass1,topmass2,chi2;
+                        double topmass1,topmass2;
 			//First bjet
                         for(size_t i=0;i<jet.size();i++){
                                 if(jet.at(i)->BTag && (jet.at(i)->Eta)<2.5){
-                                        TLorentzVector top1,top2,bjet1,bjet2,ljet1,ljet2,ljet3,ljet4,w1,w2;
-                                        bjet1.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
+                                        TLorentzVector bjet1,bjet2,ljet1,ljet2,ljet3,ljet4;
+					bjet1=makeTLorentzVector(jet.at(i));
+       					solve.setBJetA(bjet1);
+
 					//Second bjet
                                         for(size_t j=0;j<jet.size();j++){
                                                 if(jet.at(j)->BTag && (jet.at(j)->Eta)<2.5 && j!=i){
-                                                        bjet2.SetPtEtaPhiM(jet.at(j)->PT,jet.at(j)->Eta,jet.at(j)->Phi,jet.at(j)->Mass);
+							bjet2=makeTLorentzVector(jet.at(j));
+                                                        solve.setBJetB(bjet2);
+							
 							//first lightjet
                                                         for(size_t k=0;k<jet.size();k++){
                                                                 if(!(jet.at(k)->BTag) && (jet.at(k)->Eta)<2.5){
-                                                                        ljet1.SetPtEtaPhiM(jet.at(k)->PT,jet.at(k)->Eta,jet.at(k)->Phi,jet.at(k)->Mass);
+                                                                        ljet1=makeTLorentzVector(jet.at(k));
+									solve.setLightJetA(ljet1);
+
 									//Second lightjet
                                                                         for(size_t l=k;l<jet.size();l++){
                                                                                 if(!(jet.at(l)->BTag) && (jet.at(l)->Eta)<2.5 && l!=k){
-                                                                                        ljet2.SetPtEtaPhiM(jet.at(l)->PT,jet.at(l)->Eta,jet.at(l)->Phi,jet.at(l)->Mass);
-                                                                                        top1=bjet1+ljet1+ljet2;
-                                                                                        w1=ljet1+ljet2;
+                                                                                        ljet2=makeTLorentzVector(jet.at(l));
+                                                                                        solve.setLightJetB(ljet2);
+                                                                                        
 											//Third lightjet
 											for(size_t m=0;m<jet.size();m++){
 												if(!(jet.at(m)->BTag) && (jet.at(m)->Eta)<2.5 && m!=k && m!=l){
-													ljet3.SetPtEtaPhiM(jet.at(m)->PT,jet.at(m)->Eta,jet.at(m)->Phi,jet.at(m)->Mass);
+													ljet3=makeTLorentzVector(jet.at(m));
+													solve.setLightJetC(ljet3);
+
 													//fourth lightjet
 													for(size_t n=m;n<jet.size();n++){
 														if(!(jet.at(n)->BTag) && (jet.at(n)->Eta)<2.5 && n!=k && n!=l && n!=m){
-															ljet4.SetPtEtaPhiM(jet.at(n)->PT,jet.at(n)->Eta,jet.at(n)->Phi,jet.at(n)->Mass);
-															top2=bjet2+ljet3+ljet4;
-                                                                                        				w2=ljet3+ljet4;
-															chi2=(M_W-w1.M())*(M_W-w1.M())/((2*sigmaljet)*(2*sigmaljet)) + (M_W-w2.M())*(M_W-w2.M())/((2*sigmaljet)*(2*sigmaljet)) + (M_t-top1.M())*(M_t-top1.M())/((2*sigmaljet+sigmabjet)*(2*sigmaljet+sigmabjet)) + (M_t-top2.M())*(M_t-top2.M())/((2*sigmaljet+sigmabjet)*(2*sigmaljet+sigmabjet));
+															ljet4=makeTLorentzVector(jet.at(n));
+															solve.setLightJetD(ljet4);
+                                                                                        				
+															double chi2=solve.getChi2();
 															if(chi2<bestchi){
                                                                                                 				bestchi=chi2;
-                                                                				                                topmass1=top1.M();
-                                				                                                                topmass2=top2.M();
+                                                                				                                topmass1=(bjet1+ljet1+ljet2).M();
+                                				                                                                topmass2=(bjet1+ljet1+ljet2).M();
 				                                                                                        }
 
 														}

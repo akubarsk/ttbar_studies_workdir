@@ -10,12 +10,20 @@ TLorentzVector makeTLorentzVector(T* c){
     return out;
 }
 
-template<class K, class U>
-double deltaR(K* a, U* b){
-double dphi= deltaPhi(a.Phi(), b.Phi());
-double deta=a.PseudoRapidity() - b.PseudoRapidity();
+template<class T>
+double deltaR(T* a, T* b){
+double dphi= deltaPhi(a->Phi, b->Phi);
+double deta=a->Eta - b->Eta;
 return TMath::Sqrt(dphi*dphi+deta*deta);
 }
+
+template<class T>
+double deltaR(T* a, double lep_phi, double lep_eta){
+double dphi= deltaPhi(a->Phi, lep_phi);
+double deta=a->Eta - lep_eta;
+return TMath::Sqrt(dphi*dphi+deta*deta);
+}
+
 
 template<class T>
 double JetDeltaR(T* a){
