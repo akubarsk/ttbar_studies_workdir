@@ -76,12 +76,6 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 	//Playing with values
 	TH1* histoEr=addPlot(new TH1D("Errors","number of double counting",10,0,10),"n","N_{event}");
 
-	//sorted invariant masses
-	TH1* histoW=addPlot(new TH1D("W boson","jets from W decay",100,10,150),"M [GeV]","N_{jets}");
-	TH1* histoW3C=addPlot(new TH1D("Wplusjet","m_{inv} of 3 jets(W sorted)",100,0,500),"M [GeV]","N_{jets}");
-	TH1* histoT=addPlot(new TH1D("tquark","m_{inv} of jets from t-quark",100,10,500),"M [GeV]","N");
-	/*TH1* histoSaT=addPlot(new TH1D("tquark_Sa","m_{inv} of 3 jets, where 1 is W",100,0,500),"M [GeV]","N");*/
-
 	//boosted top quark
 	TH1* histoSL_Boosted=addPlot(new TH1D("tquark_SL_boosted","t-quark m_{inv} mass in semileptonic decay",100,0,300),"M [GeV]","N");
 	TH1* histoFromLep=addPlot(new TH1D("tquark_FromLep","t-quark m_{inv} mass from blv in semileptonic decay",100,0,500),"M [GeV]","N");	
@@ -173,7 +167,7 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 		
 		//Searching eligible electron
 		for(size_t i=0;i<elecs.size();i++){
-			if((elecs.at(i)->PT)>30 && fabs(elecs.at(i)->Eta)<2.1){
+			if(eligibleLepton(elecs.at(i))){
 				if(second){
 					interesting=false;
 				}else{
@@ -186,7 +180,7 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 		 }
 		//Searching eligible muon
 		for(size_t i=0;i<muontight.size();i++){
-			if((muontight.at(i)->PT)>30 && fabs(muontight.at(i)->Eta)<2.1){
+			if(eligibleLepton(muontight.at(i))){
                         	if(second){
                                 	interesting=false;
                                 }else{
@@ -215,7 +209,7 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 			bool check = true; //testing is there multiple bjets in range(for myself)
 
 			for(size_t i=0;i<jet.size();i++){
-				if(jet.at(i)->BTag && (jet.at(i)->Eta)<2.5){
+				if(eligibleBJet(jet.at(i))){
 
 					//Checking is angular distance is close enough between lepton and bjet
 					double DeltaR = deltaR(jet.at(i),lepton_phi,lepton_eta);
@@ -240,13 +234,13 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 					}else{
 							//fisrt lightjet
 							for(size_t j=0;j<jet.size();j++){
-								if(!(jet.at(j)->BTag) && (jet.at(j)->Eta)<2.5){
+								if(eligibleLightJet(jet.at(j))){
 									DeltaR=deltaR(jet.at(i),jet.at(j));
 									//Angular distance between bjet and ljet has to be close enough
 									if(DeltaR<1.2){
 										//second light jet
 										for(size_t k=j;k<jet.size();k++){
-											if(!(jet.at(k)->BTag) && (jet.at(k)->Eta)<2.5 && k!=j){
+											if(eligibleLightJet(jet.at(k))){
 												int leading; //leading jet
 												//declearing highest PT jet as leading jet
 												if(jet.at(i)->PT > jet.at(j)->PT){leading=i;}
@@ -292,26 +286,26 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 
 			for(size_t i=0;i<jet.size();i++){
 				//bjet from blv
-                                if(jet.at(i)->BTag && (jet.at(i)->Eta)<2.5){
+                                if(eligibleBJet(jet.at(i))){
 					TLorentzVector bjet1,bjet2,ljet1,ljet2;
 					bjet1=makeTLorentzVector(jet.at(i));
 					solve.setBJetA(bjet1);
 
 					for(size_t j=0;j<jet.size();j++){
 						//bjet from bqq'
-                               			if(jet.at(j)->BTag && (jet.at(j)->Eta)<2.5 && j!=i){
+                               			if(eligibleBJet(jet.at(j)) && j!=i){
 							bjet2=makeTLorentzVector(jet.at(j));
 							solve.setBJetB(bjet2);
 
 							for(size_t k=0;k<jet.size();k++){
 								//first lightjet
-								if(!(jet.at(k)->BTag) && (jet.at(k)->Eta)<2.5){
+								if(eligibleLightJet(jet.at(k))){
 									ljet1=makeTLorentzVector(jet.at(k));
 									solve.setLightJetA(ljet1);
 				
 									for(size_t l=k;l<jet.size();l++){
 										//second lightjet
-										if(!(jet.at(l)->BTag) && (jet.at(l)->Eta)<2.5 && l!=k){
+										if(eligibleLightJet(jet.at(l)) && l!=k){
 
 											ljet2=makeTLorentzVector(jet.at(l));
 											solve.setLightJetB(ljet2);
@@ -346,38 +340,38 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
                         double topmass1,topmass2;
 			//First bjet
                         for(size_t i=0;i<jet.size();i++){
-                                if(jet.at(i)->BTag && (jet.at(i)->Eta)<2.5){
+                                if(eligibleBJet(jet.at(i))){
                                         TLorentzVector bjet1,bjet2,ljet1,ljet2,ljet3,ljet4;
 					bjet1=makeTLorentzVector(jet.at(i));
        					solve.setBJetA(bjet1);
 
 					//Second bjet
                                         for(size_t j=0;j<jet.size();j++){
-                                                if(jet.at(j)->BTag && (jet.at(j)->Eta)<2.5 && j!=i){
+                                                if(eligibleBJet(jet.at(j)) && j!=i){
 							bjet2=makeTLorentzVector(jet.at(j));
                                                         solve.setBJetB(bjet2);
 							
 							//first lightjet
                                                         for(size_t k=0;k<jet.size();k++){
-                                                                if(!(jet.at(k)->BTag) && (jet.at(k)->Eta)<2.5){
+                                                                if(eligibleLightJet(jet.at(k))){
                                                                         ljet1=makeTLorentzVector(jet.at(k));
 									solve.setLightJetA(ljet1);
 
 									//Second lightjet
                                                                         for(size_t l=k;l<jet.size();l++){
-                                                                                if(!(jet.at(l)->BTag) && (jet.at(l)->Eta)<2.5 && l!=k){
+                                                                                if(eligibleLightJet(jet.at(l)) && l!=k){
                                                                                         ljet2=makeTLorentzVector(jet.at(l));
                                                                                         solve.setLightJetB(ljet2);
                                                                                         
 											//Third lightjet
 											for(size_t m=0;m<jet.size();m++){
-												if(!(jet.at(m)->BTag) && (jet.at(m)->Eta)<2.5 && m!=k && m!=l){
+												if(eligibleLightJet(jet.at(m)) && m!=k && m!=l){
 													ljet3=makeTLorentzVector(jet.at(m));
 													solve.setLightJetC(ljet3);
 
 													//fourth lightjet
 													for(size_t n=m;n<jet.size();n++){
-														if(!(jet.at(n)->BTag) && (jet.at(n)->Eta)<2.5 && n!=k && n!=l && n!=m){
+														if(eligibleLightJet(jet.at(n)) && n!=k && n!=l && n!=m){
 															ljet4=makeTLorentzVector(jet.at(n));
 															solve.setLightJetD(ljet4);
                                                                                         				
@@ -402,114 +396,6 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
                         }
 			histoFH->Fill(topmass1);
 			histoFH->Fill(topmass2);
-		}
-
-
-		//Full hadronic
-		bool used[jet.size()+1]={false};	
-		int bestint=0;
-		int wjets[jet.size()+1];
-		for(size_t i=0;i<jet.size();i++){
-		
-		TLorentzVector v1;
-                v1.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
-		if(!used[i]){
-			wjets[i]=-1;
-		}
-
-		TLorentzVector bestfit;
-		if(!(jet.at(i)->BTag) && (i!=jet.size()) && !used[i]){
-			for(size_t j=i;j<jet.size();j++){
-				if(j!=i && !used[j]){
-					TLorentzVector v2;
-					v2.SetPtEtaPhiM(jet.at(j)->PT,jet.at(j)->Eta,jet.at(j)->Phi,jet.at(j)->Mass);
-					v2=v2+v1;
-					if(fabs(v2.M()-80.39)<fabs(bestfit.M()-80.39)){ //selecting 2nd jet to get inv mass equal W as close as possiable
-						bestfit=v2;
-						bestint=j;
-					}
-				}
-
-			}
-			if(bestfit.M()>10){ //Not considering casses where invariant mass is extremaly small compere to W
-				histoW->Fill(bestfit.M());
-				used[bestint]=true;
-				wjets[i]=bestint;
-				wjets[bestint]=i;
-			}
-			
-		}		
-
-		}
-		/*3 jet masses if W jets sorted*/
-		int wjets2[jet.size()+1];
-		for(size_t i=0;i<jet.size()+1;i++){
-			wjets2[i]=wjets[i];
-		}
-		int bjetcount=0;
-		for(size_t i=0;i<jet.size();i++){
-		
-		TLorentzVector v1;
-		TLorentzVector v2;
-		TLorentzVector v3;
-		v1.SetPtEtaPhiM(jet.at(i)->PT,jet.at(i)->Eta,jet.at(i)->Phi,jet.at(i)->Mass);
-		
-		if(wjets[i]==-1){
-			/*for(size_t j=i;j<jet.size();j++){
-				if(j!=i && wjets[j]==-1){
-					v2.SetPtEtaPhiM(jet.at(j)->PT,jet.at(j)->Eta,jet.at(j)->Phi,jet.at(j)->Mass);
-					for(size_t k=j;k<jet.size();k++){
-						if(k!=j && wjets[k]==-1){
-							v3.SetPtEtaPhiM(jet.at(k)->PT,jet.at(k)->Eta,jet.at(k)->Phi,jet.at(k)->Mass);
-							v3=v2+v1;
-							histoW3C->Fill(v3.M());
-						}
-					}
-				}
-			}*/
-		}else{
-			size_t j=wjets[i];
-			v2.SetPtEtaPhiM(jet.at(j)->PT,jet.at(j)->Eta,jet.at(j)->Phi,jet.at(j)->Mass);
-			for(size_t k=i;k<jet.size();k++){
-				if(k!=j && jet.at(k)->BTag){
-					v3.SetPtEtaPhiM(jet.at(k)->PT,jet.at(k)->Eta,jet.at(k)->Phi,jet.at(k)->Mass);
-					v3=v3+v2+v1;
-					histoW3C->Fill(v3.M());
-                                }
-			}
-		}
-		/*t-quark mass(sorting b+W jets)*/
-		TLorentzVector bestfit;
-		if(jet.at(i)->BTag){
-			bjetcount++;
-			for(size_t j=i;j<jet.size();j++){
-				if(wjets2[j]!=-1){
-					size_t k=wjets2[j];
-					v3.SetPtEtaPhiM(jet.at(k)->PT,jet.at(k)->Eta,jet.at(k)->Phi,jet.at(k)->Mass);
-					v2.SetPtEtaPhiM(jet.at(j)->PT,jet.at(j)->Eta,jet.at(j)->Phi,jet.at(j)->Mass);
-					v3=v3+v2+v1;
-					if(fabs(v3.M()-173)<fabs(bestfit.M()-173)){
-						bestfit=v3;
-						bestint=j;
-					}
-				}
-			}
-			if(bestfit.M()>10){
-				histoT->Fill(bestfit.M());
-				wjets2[bestint]=-1;
-			}
-		}
-		}
-				
-		 /* Or to fill the skim
-		 */
-		skimmedelecs.clear();
-		for(size_t i=0;i<elecs.size();i++){
-			//flat info
-			elecPt=elecs.at(i)->PT;
-			if(elecs.at(i)->PT < 20) continue;
-			//or objects
-			skimmedelecs.push_back(*elecs.at(i));
 		}
 
 		myskim->Fill();
