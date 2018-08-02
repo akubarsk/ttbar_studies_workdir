@@ -49,7 +49,12 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 	d_ana::dBranchHandler<Muon>        muontight(tree(),"Muon");
 	d_ana::dBranchHandler<MissingET>   met(tree(),"MissingET");
 
-
+	d_ana::dBranchHandler<Jet>	   ParticleFlowJet04(tree(),"ParticleFlowJet04");
+	d_ana::dBranchHandler<Jet>         ParticleFlowJet05(tree(),"ParticleFlowJet05");
+	d_ana::dBranchHandler<Jet>	   ParticleFlowJet08(tree(),"ParticleFlowJet08");
+	d_ana::dBranchHandler<Jet>         ParticleFlowJet12(tree(),"ParticleFlowJet12");
+	d_ana::dBranchHandler<Jet>	   ParticleFlowJet15(tree(),"ParticleFlowJet15");
+	
 	/* ==SKIM==
 	 *
 	 * If a skim of the Delphes outout was created in a way indicated
@@ -73,16 +78,21 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 	 * Histograms created this way are automatically added to the output file
 	 */
 	TH1* histoname1=addPlot(new TH1D("histoname1","histotitle1",100,0,100)," "," ");
-	//Playing with values
-	TH1* histoEr=addPlot(new TH1D("Errors","number of double counting",10,0,10),"n","N_{event}");
-
-	//boosted top quark
-	TH1* histoSL_Boosted=addPlot(new TH1D("tquark_SL_boosted","t-quark m_{inv} mass in semileptonic decay",100,0,300),"M [GeV]","N");
-	TH1* histoFromLep=addPlot(new TH1D("tquark_FromLep","t-quark m_{inv} mass from blv in semileptonic decay",100,0,500),"M [GeV]","N");	
-
-	//Chi minimazing method
-	TH1* histoSL=addPlot(new TH1D("tquark_SL","t-quark m_{inv} mass in semileptonic decay",50,100,400),"M [GeV]","N");
-	TH1* histoFH=addPlot(new TH1D("tquark_FH","t-quark m_{inv} mass in full hadronic decay",100,0,500),"M [GeV]","N");
+	//Masses of different jets
+	TH1* histoAK4M=addPlot(new TH1D("AK4_mass","Mass of AK4 jets",100,0,500),"GeV","N_jet");
+	TH1* histoAK5M=addPlot(new TH1D("AK5_mass","Mass of AK5 jets",100,0,500),"GeV","N_jet");
+	TH1* histoAK8M=addPlot(new TH1D("AK8_mass","Mass of AK8 jets",100,0,500),"GeV","N_jet");
+	TH1* histoAK12M=addPlot(new TH1D("AK12_mass","Mass of AK12 jets",100,0,500),"GeV","N_jet");
+	TH1* histoAK15M=addPlot(new TH1D("AK15_mass","Mass of AK15 jets",100,0,500),"GeV","N_jet");
+	//Pt of different jets
+	TH1* histoAK5PT=addPlot(new TH1D("AK5_PT","Pt of AK5 jets",100,0,500),"GeV","N_jet");
+	TH1* histoAK12PT=addPlot(new TH1D("AK12_PT","Pt of AK12 jets",100,0,500),"GeV","N_jet");
+	TH1* histoLead=addPlot(new TH1D("Leading_PT","Pt of Leading jet",100,400,1000),"GeV","N_jet");
+	//Boosted top quark analysis
+	TH1* histoSL=addPlot(new TH1D("tquark_SL","t-quark m_{inv} mass in semileptonic decay",40,50,400),"M [GeV]","N");
+        TH1* histoSL_H=addPlot(new TH1D("tquark_SL_H","t-quark m_{inv} mass in semileptonic decay(only bqq')",40,50,400),"M [GeV]","N");
+        TH1* histoSL_L=addPlot(new TH1D("tquark_SL_L","t-quark m_{inv} mass in semileptonic decay(only blv)",40,50,400),"M [GeV]","N");
+	
 	
 	/*
 	 * If (optionally) a skim or a flat ntuple is to be created, please use the following function to initialize
@@ -114,11 +124,26 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 		reportStatus(eventno,nevents);
 		tree()->setEntry(eventno);
 
-		//Basic "constants"
-		double M_W  = 80.4;
-  		double M_mu =  0.10566;
-  		double M_e = 0.511e-3;
-		double M_t = 173.1;
+		//checking AK jets properties
+		for(size_t i=0;i<ParticleFlowJet04.size();i++){
+			histoAK4M->Fill(ParticleFlowJet04.at(i)->Mass);
+		}
+		for(size_t i=0;i<ParticleFlowJet05.size();i++){
+                        histoAK5M->Fill(ParticleFlowJet05.at(i)->Mass);
+			histoAK5PT->Fill(ParticleFlowJet05.at(i)->PT);
+                }
+		for(size_t i=0;i<ParticleFlowJet08.size();i++){
+                        histoAK8M->Fill(ParticleFlowJet08.at(i)->Mass);
+                }
+		for(size_t i=0;i<ParticleFlowJet15.size();i++){
+                        histoAK15M->Fill(ParticleFlowJet15.at(i)->Mass);
+                }
+		for(size_t i=0;i<ParticleFlowJet12.size();i++){
+                        histoAK12M->Fill(ParticleFlowJet12.at(i)->Mass);
+			histoAK12PT->Fill(ParticleFlowJet12.at(i)->PT);
+                }
+
+
 
 		/*
 		 * Begin the event-by-event analysis
@@ -127,44 +152,50 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 		
 		//Event analysis
 		//Limits for event:
-		//|eta|< 2.5 for jets
-		//At least 2 b-jets
-		//At least 2 light jets(4 for FH)
+		//|eta|< 2.5 for jets(2.4 for b-jets)
+		//At least 2 AK5 b-jets with pt>50GeV(at least one over 150)
+		//Exactly 1 leading and 1 next-to leading jets
+		//leading jets Pt>400GeV and next-to leading pt>150Gev
+		//
+		//|Eta|<2.1 for leptons
+		//P_T>45GeV for leptons
+		//Only one lepton(muon or electron)
+		//
+		//MET P_T>20GeV
+		//Scalar sum of PT of MET and PT of lepton>150GeV
+		//deltaPhi between lepton/jet and met has to be small enough
 
-		//Counting eligible jets
+
+		//Checking is there enough fast b-jets
 		size_t bjets=0;
-		size_t ljets=0;
-		for(size_t i=0;i<jet.size();i++){
-			if(fabs(jet.at(i)->Eta)<2.5){
-				if(jet.at(i)->BTag){
-					bjets++;
-				}else{ljets++;}
+		bool interesting=false;
+
+		for(size_t i=0;i<ParticleFlowJet05.size();i++){
+			if(eligibleBJet(ParticleFlowJet05.at(i))){
+				if(ParticleFlowJet05.at(i)->PT >150){ //at least one b-jet has to be with Pt over 150GeV
+					interesting=true;
+				}
+				bjets++;
 			}
 		}
-		
 		if(bjets<2){continue;}
-		if(ljets<2){continue;}
 
-		//Semieptonic
-		//Limits for events:
-		//|Eta|<2.1 for leptons
-		//P_T>30GeV for leptons
-		//Only one lepton
+		//Semieptonic decay
 		
 		//Class for calculating neutrino Pz
 		pz_calculator neutrPZ;
 
-		//Class for finding Chi^2
-		ttbar_solver solve;
-
-		bool interesting=true;
 		TLorentzVector lepton;
-		double M_lepton=M_e; //setting lepton mass to elektron, changed further if that not the case
+		double M_e = 0.511e-3;
+		double M_mu = 0.10566;
+
+		double M_lepton=M_e; //setting lepton mass to electron, changed further if that not the case
 		double lepton_eta;
 		double lepton_phi;
 		bool second=false;
-		//Searching events with only one lepton
-		
+
+		//Searching events with only one lepton		
+		//
 		//Searching eligible electron
 		for(size_t i=0;i<elecs.size();i++){
 			if(eligibleLepton(elecs.at(i))){
@@ -192,211 +223,56 @@ void testanalyser::analyze(size_t childid /* this info can be used for printouts
 				}
 			}
 		}
-
-		if(interesting){			
-			//missing transversal energy
-			TLorentzVector metP4=(met.at(0)->P4());
+		if(!interesting){continue;}
+		//Searching for leading and next-to leading jets
+		TLorentzVector LeadingJet,LepLeadingJet;
+		int leadingjets=0;
+		for(size_t i=0;i<ParticleFlowJet12.size();i++){
+                        if(eligibleLeadingJet(ParticleFlowJet12.at(i))){
+				leadingjets++;
+				if(ParticleFlowJet12.at(i)->PT > LeadingJet.Pt()){
+					LepLeadingJet=LeadingJet;
+					LeadingJet=makeTLorentzVector(ParticleFlowJet12.at(i));
+	
+				}else{
+					LepLeadingJet=makeTLorentzVector(ParticleFlowJet12.at(i));
+				}
+			}
+		}
+		//There need to be exactly 1 leading and one next-to leading. Leading jet Pt has to be >400GeV
+		if(leadingjets!=2 || LeadingJet.Pt()<400 || LeadingJet.M()<LepLeadingJet.M()){continue;}
+		//There should be less than 1.2 angular distance between lepton and next-to leading jet
+		if(dR(LepLeadingJet.Phi(),LepLeadingJet.Eta(),lepton_phi,lepton_eta)>1.2){continue;}
+		//missing transversal energy
+              	TLorentzVector metP4=(met.at(0)->P4());
+		//limits for missing transversal momentum
+		double metPT=metP4.Pt();
+		if(metPT<20){continue;}
+		if((metPT+lepton.Pt())<150){continue;}
+		if(M_lepton==M_e && (deltaPhi(LepLeadingJet.Phi(),metP4.Phi())>(metPT/50) || deltaPhi(lepton_phi,metP4.Phi())>(metPT/50))){continue;}		
 			
-			//p_z calculating
-			neutrPZ.setLepton(lepton);
-			neutrPZ.setMET(metP4);
-			neutrPZ.setLeptonMass(M_lepton);			
+		//p_z calculating(for neutrino)
+		neutrPZ.setLepton(lepton);
+		neutrPZ.setMET(metP4);
+		neutrPZ.setLeptonMass(M_lepton);			
 
-			//neutrino (candidate) Lorentz vector
-			TLorentzVector neutrino(metP4.Px(),metP4.Py(),neutrPZ.getPz(),TMath::Sqrt(TMath::Power(metP4.Pt(),2)+TMath::Power(neutrPZ.getPz(),2)));
+		//neutrino (candidate)
+		TLorentzVector neutrino(metP4.Px(),metP4.Py(),neutrPZ.getPz(),TMath::Sqrt(TMath::Power(metP4.Pt(),2)+TMath::Power(neutrPZ.getPz(),2)));
+			
+		LepLeadingJet+=neutrino; //adding neutrino vector to next-to leading jet as we assume this jet is blv product			
 
-			//fitting leptonic decay(boosted)
-			bool check = true; //testing is there multiple bjets in range(for myself)
+		//histograms			
+		//leading jet Pt(only from bqq)
+		histoLead->Fill(LeadingJet.Pt());
+		//mass of leading jets
+		histoSL->Fill(LeadingJet.M());
+                histoSL->Fill(LepLeadingJet.M());
+		//mass of main leading jet
+		histoSL_H->Fill(LeadingJet.M());			
+		//mass of subleading jet
+		histoSL_L->Fill(LepLeadingJet.M());
 
-			for(size_t i=0;i<jet.size();i++){
-				if(eligibleBJet(jet.at(i))){
 
-					//Checking is angular distance is close enough between lepton and bjet
-					double DeltaR = deltaR(jet.at(i),lepton_phi,lepton_eta);
-					if(DeltaR<1.2){ // mass_t from leptonic decay
-						TLorentzVector v1 = makeTLorentzVector(jet.at(i));
-						v1=v1+lepton+neutrino;	//top quark mass
-
-						//if lepton in jet, then substracking its vector
-						double JetR=JetDeltaR(jet.at(i));
-						if(DeltaR<JetR){v1=v1-lepton;}
-						
-						//histogram from blv decay
-						histoFromLep->Fill(v1.M());
-						//adding value to SL decay histogram
-						histoSL_Boosted->Fill(v1.M());
-						
-						//checking how much I double-read lepton decay with this algorythm
-						if(!check){histoEr->Fill(1);}
-						check = false;
-					
-					//if bjet was not from leptonic decay, then we look at hadronic
-					}else{
-							//fisrt lightjet
-							for(size_t j=0;j<jet.size();j++){
-								if(eligibleLightJet(jet.at(j))){
-									DeltaR=deltaR(jet.at(i),jet.at(j));
-									//Angular distance between bjet and ljet has to be close enough
-									if(DeltaR<1.2){
-										//second light jet
-										for(size_t k=j;k<jet.size();k++){
-											if(eligibleLightJet(jet.at(k))){
-												int leading; //leading jet
-												//declearing highest PT jet as leading jet
-												if(jet.at(i)->PT > jet.at(j)->PT){leading=i;}
-												else{leading=j;}
-												if(jet.at(leading)->PT < jet.at(k)->PT){leading=k;}
-
-												//if k is not the leading, then we check that angular distance with leading is small enough
-												if(leading!=k){
-													DeltaR=deltaR(jet.at(leading),jet.at(k));
-
-												//if k is leading then we check that other jets is close enough
-												}else{
-													DeltaR=deltaR(jet.at(i),jet.at(k));
-													double DeltaR_l=deltaR(jet.at(j),jet.at(k));
-													
-													if(DeltaR<DeltaR_l){DeltaR=DeltaR_l;}//Taking into account highest value
-													
-												}
-												if(DeltaR<1.2){
-													//if distances is OK, then this combination could be from t decay
-													TLorentzVector v1=makeTLorentzVector(jet.at(i));
-													TLorentzVector v2=makeTLorentzVector(jet.at(j));
-													TLorentzVector v3=makeTLorentzVector(jet.at(k));
-													v1=v1+v2+v3; //t-quark 4vector
-													//adding value to semileptonic decay histogram
-													histoSL_Boosted->Fill(v1.M());
-												}
-											}
-										}
-										
-									}
-								}
-							}
-					}
-				}
-			}
-			//Minimum of chi method:
-
-			double bestchi=1000.0;
-			double topmass1,topmass2;
-			solve.setLepton(lepton);
-			solve.setNeutrino(neutrino);
-
-			for(size_t i=0;i<jet.size();i++){
-				//bjet from blv
-                                if(eligibleBJet(jet.at(i))){
-					TLorentzVector bjet1,bjet2,ljet1,ljet2;
-					bjet1=makeTLorentzVector(jet.at(i));
-					solve.setBJetA(bjet1);
-
-					for(size_t j=0;j<jet.size();j++){
-						//bjet from bqq'
-                               			if(eligibleBJet(jet.at(j)) && j!=i){
-							bjet2=makeTLorentzVector(jet.at(j));
-							solve.setBJetB(bjet2);
-
-							for(size_t k=0;k<jet.size();k++){
-								//first lightjet
-								if(eligibleLightJet(jet.at(k))){
-									ljet1=makeTLorentzVector(jet.at(k));
-									solve.setLightJetA(ljet1);
-				
-									for(size_t l=k;l<jet.size();l++){
-										//second lightjet
-										if(eligibleLightJet(jet.at(l)) && l!=k){
-
-											ljet2=makeTLorentzVector(jet.at(l));
-											solve.setLightJetB(ljet2);
-											
-											//compering chi2 with previus combination
-											double chi2=solve.getChi2();
-											if(chi2<bestchi){
-												bestchi=chi2;
-												topmass1=(bjet1+neutrino+lepton).M();
-												topmass2=(bjet2+ljet1+ljet2).M();
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			//histogram of semileptonic decay
-			histoSL->Fill(topmass1); //from blv
-			histoSL->Fill(topmass2); //from bqq'
-		}
-
-		//Full hadronic - more sophisticated way:
-		
-		//Sorting out interesting full hadronic events:
-		if(ljets>3){	//minimum for reconstruction ttbar
-			//Minimum of chi method
-
-                        double bestchi=1000.0;
-                        double topmass1,topmass2;
-			//First bjet
-                        for(size_t i=0;i<jet.size();i++){
-                                if(eligibleBJet(jet.at(i))){
-                                        TLorentzVector bjet1,bjet2,ljet1,ljet2,ljet3,ljet4;
-					bjet1=makeTLorentzVector(jet.at(i));
-       					solve.setBJetA(bjet1);
-
-					//Second bjet
-                                        for(size_t j=0;j<jet.size();j++){
-                                                if(eligibleBJet(jet.at(j)) && j!=i){
-							bjet2=makeTLorentzVector(jet.at(j));
-                                                        solve.setBJetB(bjet2);
-							
-							//first lightjet
-                                                        for(size_t k=0;k<jet.size();k++){
-                                                                if(eligibleLightJet(jet.at(k))){
-                                                                        ljet1=makeTLorentzVector(jet.at(k));
-									solve.setLightJetA(ljet1);
-
-									//Second lightjet
-                                                                        for(size_t l=k;l<jet.size();l++){
-                                                                                if(eligibleLightJet(jet.at(l)) && l!=k){
-                                                                                        ljet2=makeTLorentzVector(jet.at(l));
-                                                                                        solve.setLightJetB(ljet2);
-                                                                                        
-											//Third lightjet
-											for(size_t m=0;m<jet.size();m++){
-												if(eligibleLightJet(jet.at(m)) && m!=k && m!=l){
-													ljet3=makeTLorentzVector(jet.at(m));
-													solve.setLightJetC(ljet3);
-
-													//fourth lightjet
-													for(size_t n=m;n<jet.size();n++){
-														if(eligibleLightJet(jet.at(n)) && n!=k && n!=l && n!=m){
-															ljet4=makeTLorentzVector(jet.at(n));
-															solve.setLightJetD(ljet4);
-                                                                                        				
-															double chi2=solve.getChi2();
-															if(chi2<bestchi){
-                                                                                                				bestchi=chi2;
-                                                                				                                topmass1=(bjet1+ljet1+ljet2).M();
-                                				                                                                topmass2=(bjet1+ljet1+ljet2).M();
-				                                                                                        }
-
-														}
-													}
-												}
-											}
-                                                                                }
-                                                                        }
-                                                                }
-                                                        }
-                                                }
-                                        }
-                                }
-                        }
-			histoFH->Fill(topmass1);
-			histoFH->Fill(topmass2);
-		}
 
 		myskim->Fill();
 
